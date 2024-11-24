@@ -6,6 +6,7 @@ import Modify from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Draw from 'ol/interaction/Draw';
+import Snap from 'ol/interaction/Snap';
 import View from 'ol/View';
 import {fromLonLat} from 'ol/proj';
 
@@ -38,9 +39,29 @@ map.addInteraction(
     formatConstructors: [GeoJSON],
   })
 );
-map.addInteraction(
-  new Draw({
-    type: 'Polygon',
-    source,
-  })
-);
+// map.addInteraction(
+//   new Draw({
+//     type: 'Polygon',
+//     source,
+//   })
+// );
+
+// map.addInteraction(
+//     new Snap({
+//       source: source,
+//     })
+// );
+
+const clear = document.getElementById('clear');
+clear.addEventListener('click', function () {
+    source.clear();
+});
+
+const format = new GeoJSON({featureProjection: 'EPSG:3857'});
+const download = document.getElementById('download');
+source.on('change', function () {
+  const features = source.getFeatures();
+  const json = format.writeFeatures(features);
+  download.href =
+    'data:application/json;charset=utf-8,' + encodeURIComponent(json);
+});
